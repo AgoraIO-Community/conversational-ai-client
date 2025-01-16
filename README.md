@@ -30,6 +30,10 @@ pnpm install
 
 3. Create a `.env.local` file in the root directory and add your environment variables:
 
+```bash
+cp .env.local.example .env.local
+```
+
 4. Run the development server:
 
 ```bash
