@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const AGENT_ROUTER_URL = process.env.NEXT_PUBLIC_AGENT_ROUTER_URL;
-
+const AGENT_UID = process.env.NEXT_PUBLIC_AGENT_UID;
 interface AgentResponse {
   clientID: string;
   status: string;
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         channel_name,
-        uid: 333,
+        uid: AGENT_UID,
       }),
     });
 
