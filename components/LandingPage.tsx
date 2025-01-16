@@ -77,6 +77,24 @@ export default function LandingPage() {
     }
   };
 
+  const handleTokenWillExpire = async (uid: string) => {
+    try {
+      const response = await fetch(
+        `/api/generate-agora-token?channel=${agoraData?.channel}&uid=${uid}`
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error('Failed to generate new token');
+      }
+
+      return data.token;
+    } catch (error) {
+      console.error('Error renewing token:', error);
+      throw error;
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white relative overflow-hidden">
       <ParticleBackground />
@@ -107,7 +125,10 @@ export default function LandingPage() {
               </div>
             )}
             <AgoraRTCProvider client={agoraClient}>
-              <ConversationComponent agoraData={agoraData} />
+              <ConversationComponent
+                agoraData={agoraData}
+                onTokenWillExpire={handleTokenWillExpire}
+              />
             </AgoraRTCProvider>
           </>
         ) : (

@@ -14,8 +14,6 @@ function generateChannelName(): string {
 
 export async function GET(request: NextRequest) {
   console.log('Generating Agora token...');
-  console.log('APP_ID:', APP_ID);
-  console.log('APP_CERTIFICATE:', APP_CERTIFICATE ? '[REDACTED]' : 'undefined');
 
   if (!APP_ID || !APP_CERTIFICATE) {
     console.error('Agora credentials are not set');
@@ -28,10 +26,11 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const uidStr = searchParams.get('uid') || '0';
   const uid = parseInt(uidStr);
-  const channelName = generateChannelName();
+  // Use provided channel name or generate new one
+  const channelName = searchParams.get('channel') || generateChannelName();
 
   try {
-    console.log('Building token with UID:', uid);
+    console.log('Building token with UID:', uid, 'Channel:', channelName);
     const token = RtcTokenBuilder.buildTokenWithUid(
       APP_ID,
       APP_CERTIFICATE,

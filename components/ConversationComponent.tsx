@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   useRTCClient,
   useLocalMicrophoneTrack,
@@ -10,6 +10,7 @@ import {
   useJoin,
   usePublish,
   RemoteUser,
+  useCurrentUID,
 } from 'agora-rtc-react';
 import { MicrophoneButton } from './MicrophoneButton';
 import { AudioVisualizer } from './AudioVisualizer';
@@ -21,10 +22,12 @@ interface ConversationComponentProps {
     uid: string;
     clientID?: string;
   };
+  onTokenWillExpire: (uid: string) => Promise<string>;
 }
 
 export default function ConversationComponent({
   agoraData,
+  onTokenWillExpire,
 }: ConversationComponentProps) {
   const client = useRTCClient();
   const isConnected = useIsConnected();
@@ -33,6 +36,7 @@ export default function ConversationComponent({
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(isEnabled);
   const [isAgentConnected, setIsAgentConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const agentUID = process.env.NEXT_PUBLIC_AGENT_UID;
 
   // Join the channel using the useJoin hook
   useJoin(
@@ -58,7 +62,7 @@ export default function ConversationComponent({
   // Handle remote user events
   useClientEvent(client, 'user-joined', (user) => {
     console.log('Remote user joined:', user.uid);
-    if (user.uid === 333) {
+    if (user.uid === agentUID) {
       // Agent UID
       setIsAgentConnected(true);
       setIsConnecting(false);
@@ -67,7 +71,7 @@ export default function ConversationComponent({
 
   useClientEvent(client, 'user-left', (user) => {
     console.log('Remote user left:', user.uid);
-    if (user.uid === 333) {
+    if (user.uid === agentUID) {
       // Agent UID
       setIsAgentConnected(false);
       setIsConnecting(false);
@@ -99,7 +103,7 @@ export default function ConversationComponent({
         },
         body: JSON.stringify({
           channel_name: agoraData.channel,
-          uid: 333,
+          uid: agentUID,
         }),
       });
 
@@ -142,6 +146,23 @@ export default function ConversationComponent({
     }
   };
 
+  // Add token renewal handler
+  const handleTokenWillExpire = useCallback(async () => {
+    if (!onTokenWillExpire) return;
+    const currentUID = useCurrentUID();
+    if (!currentUID) return;
+    try {
+      const newToken = await onTokenWillExpire(currentUID.toString());
+      await client?.renewToken(newToken);
+      console.log('Successfully renewed Agora token');
+    } catch (error) {
+      console.error('Failed to renew Agora token:', error);
+    }
+  }, [client, onTokenWillExpire]);
+
+  // Add token observer
+  useClientEvent(client, 'token-privilege-will-expire', handleTokenWillExpire);
+
   return (
     <div className="flex flex-col gap-6 p-4 h-full">
       {/* Connection Status - Updated to include stop/connect buttons */}
@@ -180,7 +201,9 @@ export default function ConversationComponent({
       <div className="flex-1">
         {remoteUsers.map((user) => (
           <div key={user.uid}>
-            <AudioVisualizer track={user.audioTrack} />
+            {/* Type assertion as any is needed due to a mismatch between agora-rtc-react and agora-rtc-sdk-ng
+                Both packages define their own IRemoteAudioTrack type with conflicting private properties */}
+            <AudioVisualizer track={user.audioTrack as any} />
             <RemoteUser user={user} />
           </div>
         ))}
