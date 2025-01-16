@@ -35,8 +35,8 @@ bower_components
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
+# production
+/build
 
 # Dependency directories
 node_modules/
@@ -73,7 +73,7 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
+.env*
 .env.development.local
 .env.test.local
 .env.production.local
@@ -86,6 +86,12 @@ web_modules/
 # Next.js build output
 .next
 out
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
 
 # Nuxt.js build / generate output
 .nuxt
