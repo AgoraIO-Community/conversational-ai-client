@@ -142,12 +142,12 @@ export function MicrophoneButton({
         ))}
       </div>
 
-      <div
-        className={`relative z-10 transition-opacity ${
-          isEnabled ? 'opacity-0' : 'opacity-100'
-        }`}
-      >
-        {isEnabled ? <Mic size={24} /> : <MicOff size={24} color="white" />}
+      <div className={`relative z-10`}>
+        {isEnabled ? (
+          <Mic size={24} className="text-gray-800" />
+        ) : (
+          <MicOff size={24} className="text-white" />
+        )}
       </div>
     </button>
   );
