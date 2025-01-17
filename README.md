@@ -1,6 +1,6 @@
-# Custom AI Agent Front-end
+# Conversational AI Agent (Front-end Client)
 
-A Next.js-based front-end application for custom AI agents, built with Agora's Real-Time Communication SDK.
+A Next.js-based front-end application for conversational AI agents, built with Agora's Real-Time Communication SDK.
 
 ## Prerequisites
 
@@ -18,8 +18,8 @@ You must have an Agora account and a project to use this application.
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/AgoraIO-Community/custom-ai-agent-front-end.git
-cd custom-ai-agent-front-end
+git clone https://github.com/AgoraIO-Community/conversational-ai-client.git
+cd conversational-ai-client
 ```
 
 2. Install dependencies:
