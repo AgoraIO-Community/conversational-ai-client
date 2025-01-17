@@ -128,6 +128,7 @@ export default function LandingPage() {
               <ConversationComponent
                 agoraData={agoraData}
                 onTokenWillExpire={handleTokenWillExpire}
+                onEndConversation={() => setShowConversation(false)}
               />
             </AgoraRTCProvider>
           </>

@@ -23,11 +23,13 @@ interface ConversationComponentProps {
     clientID?: string;
   };
   onTokenWillExpire: (uid: string) => Promise<string>;
+  onEndConversation: () => void;
 }
 
 export default function ConversationComponent({
   agoraData,
   onTokenWillExpire,
+  onEndConversation,
 }: ConversationComponentProps) {
   const client = useRTCClient();
   const isConnected = useIsConnected();
@@ -62,8 +64,7 @@ export default function ConversationComponent({
   // Handle remote user events
   useClientEvent(client, 'user-joined', (user) => {
     console.log('Remote user joined:', user.uid);
-    if (user.uid === agentUID) {
-      // Agent UID
+    if (user.uid.toString() === agentUID) {
       setIsAgentConnected(true);
       setIsConnecting(false);
     }
@@ -71,12 +72,19 @@ export default function ConversationComponent({
 
   useClientEvent(client, 'user-left', (user) => {
     console.log('Remote user left:', user.uid);
-    if (user.uid === agentUID) {
-      // Agent UID
+    if (user.uid.toString() === agentUID) {
       setIsAgentConnected(false);
       setIsConnecting(false);
     }
   });
+
+  // Add this effect to sync isAgentConnected with remoteUsers
+  useEffect(() => {
+    const isAgentInRemoteUsers = remoteUsers.some(
+      (user) => user.uid.toString() === agentUID
+    );
+    setIsAgentConnected(isAgentInRemoteUsers);
+  }, [remoteUsers, agentUID]);
 
   // Connection state changes
   useClientEvent(client, 'connection-state-change', (curState, prevState) => {
@@ -194,6 +202,10 @@ export default function ConversationComponent({
           className={`w-3 h-3 rounded-full ${
             isConnected ? 'bg-green-500' : 'bg-red-500'
           }`}
+          onClick={onEndConversation}
+          role="button"
+          title="End conversation"
+          style={{ cursor: 'pointer' }}
         />
       </div>
 
