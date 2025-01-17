@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         channel_name,
-        uid,
+        uid: parseInt(uid, 10),
       }),
     });
 

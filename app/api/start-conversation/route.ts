@@ -16,19 +16,30 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { channel_name } = body;
 
+    const requestBody = {
+      channel_name,
+      uid: parseInt(AGENT_UID || '0', 10),
+    };
+
+    console.log('Sending request to agent router:', requestBody);
+
     const response = await fetch(`${AGENT_ROUTER_URL}/start_agent`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        channel_name,
-        uid: AGENT_UID,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
-      throw new Error('Failed to start conversation');
+      const errorText = await response.text();
+      console.log('Agent router response:', {
+        status: response.status,
+        body: errorText,
+      });
+      throw new Error(
+        `Failed to start conversation: ${response.status} ${errorText}`
+      );
     }
 
     const data: AgentResponse = await response.json();
@@ -36,7 +47,12 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error starting conversation:', error);
     return NextResponse.json(
-      { error: 'Failed to start conversation' },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to start conversation',
+      },
       { status: 500 }
     );
   }
