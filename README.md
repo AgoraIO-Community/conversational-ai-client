@@ -2,6 +2,8 @@
 
 A Next.js-based front-end application for conversational AI agents, built with Agora's Real-Time Communication SDK.
 
+<img src="./.github/assets/Conversation-Ai-Client.gif" alt="Conversational AI Client" />
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
