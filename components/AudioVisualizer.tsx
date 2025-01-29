@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ILocalAudioTrack, IRemoteAudioTrack } from 'agora-rtc-sdk-ng';
+import { ILocalAudioTrack, IRemoteAudioTrack } from 'agora-rtc-react';
 
 interface AudioVisualizerProps {
   track: ILocalAudioTrack | IRemoteAudioTrack | undefined;
