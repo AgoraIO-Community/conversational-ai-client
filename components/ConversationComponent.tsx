@@ -213,9 +213,7 @@ export default function ConversationComponent({
       <div className="flex-1">
         {remoteUsers.map((user) => (
           <div key={user.uid}>
-            {/* Type assertion as any is needed due to a mismatch between agora-rtc-react and agora-rtc-sdk-ng
-                Both packages define their own IRemoteAudioTrack type with conflicting private properties */}
-            <AudioVisualizer track={user.audioTrack as any} />
+            <AudioVisualizer track={user.audioTrack} />
             <RemoteUser user={user} />
           </div>
         ))}
